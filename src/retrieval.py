@@ -11,6 +11,9 @@ from sentence_transformers import util
 
 def semantic_search(querry , model , embeddings , chunks):
 
+    # Performing Semantic Search by making 'cosine similarity'
+    # to all the embeddings one by one and get the best chunks by sorting the score
+    # and all 
     querry_embeddings = model.encode(
         querry,
         normalize_embeddings = True,
