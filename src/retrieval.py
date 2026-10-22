@@ -9,27 +9,33 @@ from sentence_transformers import util
 
 ## Here we are required to create one more basic function check the score of the chunks on the basis of querry
 
-def semantic_search(querry , model , embeddings , chunks):
+## Now lets get the data from chroma_db instead of manual passing it
+def semantic_search(query , model , collection , n_results):
 
-    # Performing Semantic Search by making 'cosine similarity'
-    # to all the embeddings one by one and get the best chunks by sorting the score
-    # and all 
-    querry_embeddings = model.encode(
-        querry,
+    query_embeddings = model.encode(
+        query,
         normalize_embeddings = True,
         show_progress_bar = True
     )
 
-    ## Now lets make the cosine similarity with each chunks and get its scores
-
-    scores = util.cos_sim(querry_embeddings , embeddings)[0]
-    sorted_score_ind = scores.argsort(descending=True).tolist()
-
-    ## Now we have the index which gives the sorted score
+    """Retrieve the most similar chunks using Chromadb"""
+    ## Now lets search for all the vectors with distance from querry
+    # Search The Stored Vector
+    results = collection.query(
+        query_embeddings = [query_embeddings.tolist()],
+        n_results = n_results,
+        include = ["documents" , "distances"]
+    )
 
     return [
-        (chunks[i], float(scores[i]))
-        for i in sorted_score_ind
+        {
+            "document" : document,
+            "distance" : distance
+        }
+        for document, distance in zip(
+            results["documents"][0],
+            results["distances"][0],
+        )
     ]
 
 
@@ -58,8 +64,8 @@ def store_in_chromadb(chunks , embeddings):
 if __name__ == "__main__":
     
     data_path = "data/documents/company_policy.txt"
-    querry1 = "Can I work remotely, and how many days are allowed?"
-    querry2 = "what are the supports provided by the company?"
+    query1 = "Can I work remotely, and how many days are allowed?"
+    query2 = "what are the supports provided by the company?"
     
     
     
@@ -73,9 +79,6 @@ if __name__ == "__main__":
     model = load_embedding_model()
     embeddings = generate_embeddings(chunks , model) 
 
-
-
-
     ## Now lets store the Embeddings in chromadb
     collection = store_in_chromadb(chunks , embeddings)
 
@@ -83,27 +86,16 @@ if __name__ == "__main__":
         include = ['documents']
     )
 
-    # Now lets verify the stored record now
-    print("Verify the stored record for now")
+    # 3. Now lets check the semantic search documents and its distance : 
+    results = semantic_search(query2 , model , collection , 2)
 
-    for doc_id, document in zip(
-        stored_data["ids"],
-        stored_data["documents"],
-    ):
-        print(f"\nID: {doc_id}")
-        print(f"Document: {document[:100]}...")
+    print("\n-- Chromadb Search Result --")
+    print(f"\nUser question: {query2}")
 
-
-
-    # 3. Now lets check the semantic_search chunks ordering
-    results = semantic_search(querry2 , model , embeddings , chunks)
-
-    print(f"\nUser question: {querry2}")
-    print("\nRanked retrieval results:")
-
-    for rank, (chunk, score) in enumerate(results, start=1):
-        print(f"\nRank {rank} | Similarity: {score:.4f}")
-        print(chunk)
+    for rank , result in enumerate(results , start=1):
+        print(f"\n Rank: {rank}")
+        print(f"\n Distance: {result['distance']:.4f}")
+        print(f"\n Document: {result['document']}")
 
     
 
