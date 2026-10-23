@@ -111,12 +111,13 @@ def main():
         )
 
         hybrid_results = hybrid_search(
-            query=question,
-            chunks=chunks,
-            model=model,
-            collection=collection,
-            bm25=bm25,
-            n_results=K,
+            query = question,
+            chunks = chunks,
+            bm25 = bm25,
+            embedding_model=model,
+            collection = collection,
+            n_results=2,
+            fusion_k=60
         )
 
         if expected_ids:
