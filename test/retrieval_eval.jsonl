@@ -1,0 +1,13 @@
+
+{"id":"q01","question":"How many days per week can I work remotely?","expected_section_ids":["policy_0"],"query_type":"normal"}
+{"id":"q02","question":"How early must I notify my manager before working from home?","expected_section_ids":["policy_0"],"query_type":"semantic"}
+{"id":"q03","question":"Can I work remotely five days a week without approval?","expected_section_ids":["policy_0"],"query_type":"difficult"}
+{"id":"q04","question":"How many paid leaves do employees get annually?","expected_section_ids":["policy_1"],"query_type":"normal"}
+{"id":"q05","question":"Who authorizes an absence longer than three consecutive working days?","expected_section_ids":["policy_1"],"query_type":"semantic"}
+{"id":"q06","question":"What is the maximum period allowed for submitting travel expense claims?","expected_section_ids":["policy_2"],"query_type":"normal"}
+{"id":"q07","question":"Which documents must accompany a business travel reimbursement claim?","expected_section_ids":["policy_2"],"query_type":"semantic"}
+{"id":"q08","question":"Where should I report a salary payment problem?","expected_section_ids":["policy_3"],"query_type":"semantic"}
+{"id":"q09","question":"Who fixes problems with company-provided equipment?","expected_section_ids":["policy_3"],"query_type":"semantic"}
+{"id":"q10","question":"WFH approval and advance notice requirements","expected_section_ids":["policy_0"],"query_type":"keyword"}
+{"id":"q11","question":"Can I claim expenses for a personal vacation?","expected_section_ids":["policy_2"],"query_type":"difficult"}
+{"id":"q12","question":"What is the company's parental leave policy?","expected_section_ids":[],"query_type":"unanswerable"}

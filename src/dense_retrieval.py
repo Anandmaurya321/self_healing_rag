@@ -28,21 +28,23 @@ def semantic_search(query , model , collection , n_results):
     )
 
     return [
-        {
-            "document" : document,
-            "distance" : distance
-        }
-        for document, distance in zip(
-            results["documents"][0],
-            results["distances"][0],
-        )
+    {
+        "id": chunk_id,
+        "document": document,
+        "distance": distance,
+    }
+    for chunk_id, document, distance in zip(
+        results["ids"][0],
+        results["documents"][0],
+        results["distances"][0],
+    )
     ]
 
 
 ### Now lets store embeddings in chroma_db
 def store_in_chromadb(chunks , embeddings):
     client = chromadb.PersistentClient( ## Select the database
-        path="/chromadb"
+        path="./data/chroma_db"
     )
 
     collection = client.get_or_create_collection( ## Select the collection 
@@ -86,17 +88,27 @@ if __name__ == "__main__":
         include = ['documents']
     )
 
-    # 3. Now lets check the semantic search documents and its distance : 
-    results = semantic_search(query2 , model , collection , 2)
-
-    print("\n-- Chromadb Search Result --")
-    print(f"\nUser question: {query2}")
-
-    for rank , result in enumerate(results , start=1):
-        print(f"\n Rank: {rank}")
-        print(f"\n Distance: {result['distance']:.4f}")
-        print(f"\n Document: {result['document']}")
-
-    
 
 
+    # Test retrieval with different questions
+    queries = [
+        "Can I work remotely, and how many days are allowed?",
+        "How long do I have to submit travel expense claims?",
+        "Who should I contact for payroll problems?",
+    ]
+
+    for query in queries:
+        results = semantic_search(
+            query=query,
+            collection=collection,
+            model=model,
+            n_results=2,
+        )
+
+        print(f"\n{'=' * 60}")
+        print("Question:", query)
+
+        for rank, result in enumerate(results, start=1):
+            print(f"\nRank: {rank}")
+            print(f"Distance: {result['distance']:.4f}")
+            print(f"Document: {result['document']}")
